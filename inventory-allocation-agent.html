@@ -1472,7 +1472,7 @@ function buildAgentSteps(s) {
     { icon:'✅', label:'Step 6 — Allocation Staged (M6)',
       text:`ATP reservation records staged in <code>S/4HANA sandbox</code>. Customer impact analysis complete. Audit trail prepared. <strong>Awaiting human approval to commit to live system.</strong> ✓`,
       dur:1000, spinnerTitle:'Drafting Notifications', spinnerSub:'Generating customer communications for impacted orders…' },
-    { icon:'📧', label:'Step 7 — Customer Notifications (M4)',
+    { icon:'📧', label:'Step 7 — Customer Notifications',
       text:`Generating notification drafts for PARTIAL and DELAY orders. Communication templates applied per customer tier and contract terms. All drafts ready for review. ✓`,
       dur:1400 },
   ];
@@ -1602,7 +1602,7 @@ function injectNotifications() {
   const todayStr = DEMO_TODAY.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 
   if (!nonFulfill.length) {
-    injectSection('secNotifs','1','Customer Notifications (M4)',
+    injectSection('secNotifs','','Customer Notifications',
       `<div class="fd-message-strip fd-message-strip--success"><div>All orders fully fulfilled — no delay notifications required.</div></div>`);
     setTimeout(()=>revealSection('secNotifs'),200);
     return;
@@ -1649,7 +1649,7 @@ ${penaltyLine}<p>We have escalated this to our procurement team for an emergency
     </div>`;
   }).join('');
 
-  injectSection('secNotifs','1','Customer Notifications (M4)',cards);
+  injectSection('secNotifs','','Customer Notifications',cards);
   setTimeout(()=>revealSection('secNotifs'),200);
   setTimeout(()=>injectTraceButton(), 400);
 }
