@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior:smooth;scroll-snap-type:y proximity">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Inventory Allocation Agent — Citizen Watch America</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand-50:#d1efff;
+  --brand-100:#d1efff;
+  --brand-200:#89d1ff;
+  --brand-500:#0070f2;
+  --brand-600:#0070f2;
+  --brand-700:#002a86;
+  --surface:#fff;
+  --surface-muted:#eaecee;
+  --surface-dark:#00144a;
+  --slate-50:#f8fafc;
+  --slate-100:#f1f5f9;
+  --slate-200:#e2e8f0;
+  --slate-300:#cad5e2;
+  --slate-400:#90a1b9;
+  --slate-500:#62748e;
+  --slate-600:#45556c;
+  --slate-700:#314158;
+  --slate-800:#1d293d;
+  --slate-900:#0f172b;
+  --slate-950:#020618;
+  --amber-300:#ffd236;
+  --amber-400:#fb923c;
+  --amber-500:#ea580c;
+  --green-400:#05df72;
+  --green-700:#008138;
+  --red-400:#ff6568;
+  --red-500:#fb2c36;
+  --gold:#C9A84C;
+  --gold-2:#E8C96A;
+  --font:'Plus Jakarta Sans','72 Brand',system-ui,sans-serif;
+  --radius-card:1rem;
+  --shadow-card:0 2px 16px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
+  --shadow-glass:0 4px 24px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.6);
+  --shadow-glass-dark:0 4px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);
+}
+html{font-size:clamp(16px,1vw + 8px,20px)}
+body{font-family:var(--font);background:var(--surface);color:var(--slate-900);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--slate-200)}
+.nav-inner{max-width:80rem;margin:0 auto;padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-links{display:flex;align-items:center;gap:1.25rem;flex:1;justify-content:center}
+.nav-links a{font-size:.8rem;font-weight:600;color:var(--slate-600);white-space:nowrap;transition:color .15s}
+.nav-links a:hover{color:var(--brand-600)}
+.nav-cta{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.btn-primary{display:inline-flex;align-items:center;gap:.375rem;border-radius:999px;background:var(--brand-500);padding:.5rem 1.25rem;font-size:.8rem;font-weight:700;color:#fff;transition:background .15s;cursor:pointer}
+.btn-primary:hover{background:var(--brand-600)}
+.btn-outline{display:inline-flex;align-items:center;gap:.375rem;border-radius:999px;border:1px solid var(--slate-200);padding:.5rem 1rem;font-size:.8rem;font-weight:600;color:var(--slate-700);background:var(--surface);transition:all .15s}
+.btn-outline:hover{background:var(--slate-50);border-color:var(--slate-300)}
+
+/* PROGRESS BAR */
+#progress-bar{position:fixed;top:56px;left:0;height:2px;width:0%;background:var(--brand-500);z-index:49;transition:width .2s}
+
+/* SECTIONS */
+section{width:100%;position:relative;scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+.section-pad{padding-top:calc(56px + 2.5rem);padding-bottom:2.5rem}
+.container{max-width:80rem;margin:0 auto;padding:0 1.5rem;width:100%}
+
+/* SECTION-SPECIFIC GRADIENTS (matches Repsol pattern) */
+#hero{background:var(--surface-dark);min-height:100vh;display:flex;align-items:center}
+#agenda{background:linear-gradient(#fff 0%,var(--slate-50) 100%)}
+#encounter{background:linear-gradient(#fff 0% 70%,var(--brand-100) 100%)}
+#problem,#problem-2{background:linear-gradient(var(--brand-100) 0% 40%,var(--brand-200) 75%,var(--brand-700) 100%)}
+#stakeholders{background:linear-gradient(var(--brand-700) 0% 50%,var(--brand-200) 80%,var(--brand-100) 100%)}
+#solution{background:linear-gradient(var(--brand-100) 0%,#fff 30% 70%,var(--brand-200) 100%);padding-top:calc(56px + 1rem);padding-bottom:1rem}
+#score{background:linear-gradient(var(--brand-200) 0%,var(--brand-700) 20% 75%,var(--brand-500) 100%)}
+#build{background:linear-gradient(var(--brand-500) 0%,var(--slate-900) 25% 80%,var(--brand-700) 100%)}
+#live-demo{background:linear-gradient(var(--brand-500) 0%,var(--slate-900) 25% 80%,var(--brand-700) 100%)}
+#stack{background:linear-gradient(var(--brand-700) 0%,var(--brand-200) 25%,var(--brand-100) 70%,#fff 100%)}
+#why-now{background:linear-gradient(#fff 0%,var(--slate-50) 40%,var(--brand-100) 100%)}
+#references{background:linear-gradient(var(--brand-100) 0%,var(--slate-50) 50%,#fff 100%)}
+#resolution{background:linear-gradient(#fff 0%,var(--slate-50) 45%,rgba(0,129,56,.08) 100%);padding-top:calc(56px + 1rem);padding-bottom:1rem}
+#next-step{background:linear-gradient(var(--brand-100) 0%,#fff 35% 80%,var(--brand-200) 100%)}
+
+/* TYPOGRAPHY */
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem}
+.eyebrow-light{color:var(--brand-200)}
+.eyebrow-dark{color:var(--brand-500)}
+h1{font-size:clamp(2.5rem,5vw,4.5rem);font-weight:800;letter-spacing:-.025em;line-height:1.06}
+h2{font-size:clamp(1.875rem,3.5vw,3rem);font-weight:800;letter-spacing:-.025em;line-height:1.2}
+.gradient-text{background:linear-gradient(135deg,var(--brand-500),var(--amber-500));-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}
+.lead{font-size:1.125rem;line-height:1.7;color:var(--slate-500)}
+
+/* CARDS */
+.card-light{background:#fff;border-radius:var(--radius-card);border:1px solid var(--slate-100);box-shadow:var(--shadow-card);padding:1.5rem}
+.card-dark{background:var(--slate-900);border-radius:var(--radius-card);border:1px solid rgba(255,255,255,.1);overflow:hidden}
+.card-glass-dark{border-radius:var(--radius-card);border:1px solid rgba(255,255,255,.1);background:rgba(15,23,43,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--shadow-glass-dark);overflow:hidden}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:.375rem;border-radius:999px;padding:.25rem .75rem;font-size:.7rem;font-weight:700}
+.badge-amber{background:var(--amber-500);color:#fff}
+.badge-brand{background:var(--brand-500);color:#fff}
+.badge-glass{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff}
+.badge-outline{background:var(--slate-50);border:1px solid var(--slate-200);color:var(--slate-600)}
+
+/* COMPARISON TABLE */
+.compare-table{background:var(--slate-900);border-radius:var(--radius-card);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.compare-header{display:grid;background:var(--slate-800);padding:.75rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.1);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5)}
+.compare-row{padding:.875rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+.compare-row:last-child{border-bottom:none}
+.compare-row:hover{background:rgba(255,255,255,.04)}
+
+/* USE CASE CARDS (image bg) */
+.use-card{position:relative;border-radius:var(--radius-card);overflow:hidden;min-height:380px;display:flex;flex-direction:column;justify-content:flex-end;border:1px solid rgba(255,255,255,.1)}
+.use-card-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.use-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,43,.95) 0%,rgba(15,23,43,.6) 50%,transparent 100%);z-index:1}
+.use-card-content{position:relative;z-index:2;padding:1.5rem}
+
+/* SCORE PILLS */
+.score-pill{border-radius:var(--radius-card);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);padding:1.5rem;text-align:center;position:relative;overflow:hidden}
+.score-bar{position:absolute;top:0;left:0;right:0;height:3px}
+
+/* ALLOC TABLE */
+.alloc-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.alloc-table th{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:700;padding:.625rem 1rem;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.alloc-table td{padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.alloc-table tr:last-child td{border-bottom:none}
+.row-g{background:rgba(5,223,114,.05)}
+.row-a{background:rgba(251,146,60,.05)}
+.row-r{background:rgba(255,101,104,.05)}
+
+/* GRID HELPERS */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--slate-200);margin:2rem 0}
+.divider-dark{height:1px;background:rgba(255,255,255,.1);margin:1.5rem 0}
+
+/* KPI TILES */
+.kpi-tile{border-radius:var(--radius-card);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);padding:1.25rem;text-align:center}
+
+/* TECH NODE */
+.tech-node{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.75rem;padding:1rem 1.25rem;text-align:center;flex:1;min-width:0}
+
+/* FADE-IN */
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}
+.fade-in.visible{opacity:1;transform:none}
+
+/* CHALLENGE ACCORDIONS */
+.chal-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.55rem .875rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:.5rem;color:#fff;font-size:.75rem;font-weight:700;cursor:pointer;transition:background .15s;text-align:left}
+.chal-toggle:hover{background:rgba(255,255,255,.18)}
+.chal-toggle.open{border-radius:.5rem .5rem 0 0}
+.chal-toggle--ai{background:rgba(5,223,114,.12);border-color:rgba(5,223,114,.3);color:var(--green-400)}
+.chal-toggle--ai:hover{background:rgba(5,223,114,.2)}
+.chal-chevron{flex-shrink:0;transition:transform .25s ease}
+.chal-toggle.open .chal-chevron{transform:rotate(180deg)}
+.chal-body{max-height:0;overflow:hidden;transition:max-height .35s ease;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);border-top:none;border-radius:0 0 .5rem .5rem}
+.chal-body.open{max-height:300px}
+.chal-body-inner{padding:.75rem .875rem;font-size:.8rem;line-height:1.55;color:rgba(255,255,255,.75)}
+.chal-body--ai{background:rgba(5,223,114,.08);border-color:rgba(5,223,114,.2)}
+.chal-body--ai .chal-body-inner{color:rgba(255,255,255,.85)}
+
+/* ACCORDION BULLET LISTS */
+.chal-list{list-style:none;display:flex;flex-direction:column;gap:.3rem;margin-top:.375rem}
+.chal-list li{font-size:.8rem;line-height:1.5;color:rgba(255,255,255,.8);padding-left:1rem;position:relative}
+.chal-list li::before{content:'•';position:absolute;left:0;color:rgba(255,255,255,.35)}
+.chal-list--ai li{color:rgba(255,255,255,.85)}
+.chal-list--ai li::before{color:var(--green-400)}
+
+/* SLIDE NAV PILL */
+#slide-nav{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:.125rem;background:rgba(15,23,43,.82);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:.35rem .5rem;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.snav-btn{background:none;border:none;color:rgba(255,255,255,.65);font-size:.9rem;cursor:pointer;padding:.25rem .7rem;border-radius:999px;transition:background .15s,color .15s;line-height:1}
+.snav-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.snav-btn:disabled{opacity:.22;cursor:default;pointer-events:none}
+#slide-counter{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.9);min-width:2.75rem;text-align:center;letter-spacing:.04em;-webkit-user-select:none;user-select:none}
+
+/* SLIDE 6 — PROBLEM → SOLVED FLIP */
+#problem-2 .stack{display:grid}
+#problem-2 .stack>*{grid-area:1/1}
+.p2-old,.p2-sub-old,.p2-eye-old{transition:opacity .4s ease .95s}
+.p2-new,.p2-sub-new,.p2-eye-new{opacity:0;transform:translateY(12px);transition:opacity .5s ease 1.25s,transform .5s ease 1.25s}
+.p2-old{position:relative}
+.p2-old::before,.p2-old::after{content:'';position:absolute;top:50%;left:-3%;right:-3%;height:4px;border-radius:2px;background:var(--red-500);transform-origin:center;transition:transform .5s cubic-bezier(.65,0,.35,1)}
+.p2-old::before{transform:translateY(-50%) rotate(-11deg) scaleX(0)}
+.p2-old::after{transform:translateY(-50%) rotate(11deg) scaleX(0)}
+#problem-2.solved .p2-old::before{transform:translateY(-50%) rotate(-11deg) scaleX(1)}
+#problem-2.solved .p2-old::after{transform:translateY(-50%) rotate(11deg) scaleX(1);transition-delay:.2s}
+#problem-2.solved .p2-old,#problem-2.solved .p2-sub-old,#problem-2.solved .p2-eye-old{opacity:0}
+#problem-2.solved .p2-new,#problem-2.solved .p2-sub-new,#problem-2.solved .p2-eye-new{opacity:1;transform:none}
+.p2-badge-wrap{display:inline-grid;margin-bottom:.875rem}
+.p2-badge-wrap>*{grid-area:1/1;justify-self:start}
+.p2-badge-old{transition:opacity .4s ease .9s}
+.p2-badge-new{opacity:0;transform:translateY(6px);transition:opacity .45s ease 1.3s,transform .45s ease 1.3s;background:var(--green-700);color:#fff}
+#problem-2.solved .p2-badge-old{opacity:0}
+#problem-2.solved .p2-badge-new{opacity:1;transform:none}
+
+/* SLIDE 5 — CHALLENGE CROSS-OUT REVEAL */
+#solution .s5-chal{position:relative;display:inline-block;font-size:.82rem;font-weight:700;color:var(--slate-700);transition:color .4s ease .3s}
+#solution .s5-chal::after{content:'';position:absolute;top:52%;left:-3%;right:-3%;height:2px;border-radius:2px;background:var(--red-500);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.65,0,.35,1)}
+#solution .s5-value{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+#solution.s5-go .s5-chal{color:var(--slate-400)}
+#solution.s5-go .s5-chal::after{transform:scaleX(1)}
+#solution.s5-go .s5-value{opacity:1;transform:none}
+#solution.s5-go .s5-row:nth-child(2) .s5-chal::after{transition-delay:.15s}
+#solution.s5-go .s5-row:nth-child(3) .s5-chal::after{transition-delay:.3s}
+#solution.s5-go .s5-row:nth-child(1) .s5-value{transition-delay:.5s}
+#solution.s5-go .s5-row:nth-child(2) .s5-value{transition-delay:.65s}
+#solution.s5-go .s5-row:nth-child(3) .s5-value{transition-delay:.8s}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<header>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <img src="SAP_2011_logo.svg.webp" height="22" alt="SAP">
+      <span style="color:rgba(0,0,0,.2);font-size:12px">×</span>
+      <img src="citizen-logo.png" height="22" alt="Citizen" style="filter:brightness(.85)">
+    </div>
+    <nav class="nav-links">
+      <a href="#encounter">The Watch</a>
+      <a href="#problem">The Problem</a>
+      <a href="#solution">The Agent</a>
+      <a href="#stack">Architecture</a>
+      <a href="#why-now">Why SAP</a>
+      <a href="#references">References</a>
+      <a href="#next-step">Next Step</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="citizen-watch-allocation-agent-fiori-v2.html" class="btn-outline" target="_blank">View Agent Demo</a>
+      <a href="#next-step" class="btn-primary">Book PoC Workshop →</a>
+    </div>
+  </div>
+</header>
+<div id="progress-bar"></div>
+
+<!-- ══════════════════════════════════════════
+     HERO — THE ENCOUNTER
+══════════════════════════════════════════ -->
+<section id="hero">
+  <div style="position:absolute;inset:0;background-image:url('images-2.jpeg');background-size:cover;background-position:center 30%;filter:brightness(.35);z-index:0"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom right,rgba(0,20,74,.8),rgba(0,42,134,.6),rgba(15,23,43,.9));z-index:1"></div>
+  <div class="container" style="position:relative;z-index:2;padding-top:7rem;padding-bottom:5rem">
+    <div class="fade-in" style="max-width:44rem">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem">
+        <span class="badge badge-amber">Executive Business Discussion</span>
+        <span class="badge badge-glass">SAP BTP · Joule Studio 2.0</span>
+      </div>
+      <h1 style="color:#fff;margin-bottom:1.25rem">Your inventory,<br><span class="gradient-text">allocated at scale.</span></h1>
+      <p style="font-size:1.2rem;line-height:1.75;color:rgba(255,255,255,.75);margin-bottom:2rem;max-width:38rem">Citizen Watch America manages 4 brands, 130+ global markets, and 400+ inventory locations — with an Excel spreadsheet. There's a better way.</p>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <a href="#problem" class="btn-primary" style="padding:.75rem 1.75rem;font-size:.9rem">See the problem →</a>
+        <a href="#solution" class="btn-outline" style="color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.08)">How the agent works</a>
+      </div>
+    </div>
+    <div class="fade-in" style="margin-top:4rem;display:flex;gap:2.5rem;flex-wrap:wrap">
+      <div style="text-align:center">
+        <div style="font-size:2.8rem;font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1">400+</div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.375rem">Inventory Locations</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.15);align-self:stretch"></div>
+      <div style="text-align:center">
+        <div style="font-size:2.8rem;font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1">130+</div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.375rem">Global Markets</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.15);align-self:stretch"></div>
+      <div style="text-align:center">
+        <div style="font-size:2.8rem;font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1">4</div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.375rem">Watch Brands</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.15);align-self:stretch"></div>
+      <div style="text-align:center">
+        <div style="font-size:2.8rem;font-weight:800;color:var(--amber-400);letter-spacing:-.04em;line-height:1">Excel</div>
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:.375rem">Current Allocation Tool</div>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-align:center">
+    Prepared by Collin Weaver · Solution Advisor, SAP BTP West · Sep 2026
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     AGENDA
+══════════════════════════════════════════ -->
+<section id="agenda" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:42rem;margin:0 auto 3rem">
+      <p class="eyebrow eyebrow-dark">Agenda</p>
+      <h2 style="margin-bottom:1rem">What we'll cover today</h2>
+      <p class="lead">Four topics — from the opportunity to the concrete next step.</p>
+    </div>
+
+    <div class="fade-in" style="display:flex;flex-direction:column;gap:1rem;max-width:52rem;margin:0 auto">
+
+      <div class="card-light" style="display:flex;gap:1.5rem;align-items:center;padding:1.5rem 1.75rem">
+        <div style="font-size:2rem;font-weight:800;color:var(--brand-200);letter-spacing:-.03em;line-height:1;flex-shrink:0;min-width:2.5rem">01</div>
+        <div>
+          <p style="font-size:1.15rem;font-weight:700;color:var(--slate-900);margin-bottom:.25rem">The Opportunity</p>
+          <p style="font-size:.9rem;color:var(--slate-500);line-height:1.55">Inventory allocation at scale: one watch, 400+ locations, and the revenue in getting it right</p>
+        </div>
+      </div>
+
+      <div class="card-light" style="display:flex;gap:1.5rem;align-items:center;padding:1.5rem 1.75rem">
+        <div style="font-size:2rem;font-weight:800;color:var(--brand-200);letter-spacing:-.03em;line-height:1;flex-shrink:0;min-width:2.5rem">02</div>
+        <div>
+          <p style="font-size:1.15rem;font-weight:700;color:var(--slate-900);margin-bottom:.25rem">The Solution</p>
+          <p style="font-size:.9rem;color:var(--slate-500);line-height:1.55">A custom AI allocation agent on SAP BTP — how it scores, allocates, and the value it delivers</p>
+        </div>
+      </div>
+
+      <div class="card-light" style="display:flex;gap:1.5rem;align-items:center;padding:1.5rem 1.75rem">
+        <div style="font-size:2rem;font-weight:800;color:var(--brand-200);letter-spacing:-.03em;line-height:1;flex-shrink:0;min-width:2.5rem">03</div>
+        <div>
+          <p style="font-size:1.15rem;font-weight:700;color:var(--slate-900);margin-bottom:.25rem">How We Build It</p>
+          <p style="font-size:.9rem;color:var(--slate-500);line-height:1.55">Joule Studio 2.0, the BTP architecture, and why SAP — why now</p>
+        </div>
+      </div>
+
+      <div class="card-light" style="display:flex;gap:1.5rem;align-items:center;padding:1.5rem 1.75rem;border-left:4px solid var(--brand-500)">
+        <div style="font-size:2rem;font-weight:800;color:var(--brand-500);letter-spacing:-.03em;line-height:1;flex-shrink:0;min-width:2.5rem">04</div>
+        <div>
+          <p style="font-size:1.15rem;font-weight:700;color:var(--slate-900);margin-bottom:.25rem">The Next Step</p>
+          <p style="font-size:.9rem;color:var(--slate-500);line-height:1.55">A joint process-mapping workshop to scope the proof-of-concept</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THE WATCH — PRODUCT INTRO
+══════════════════════════════════════════ -->
+<section id="encounter" class="section-pad" style="padding-bottom:2.5rem">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:42rem;margin:0 auto 1.75rem">
+      <p class="eyebrow eyebrow-dark">The Product</p>
+      <h2 style="margin-bottom:1rem">Citizen Eco-Drive Promaster Diver</h2>
+      <p class="lead">Retail $495. Margin $245/unit. The watch a customer wants. The inventory allocation problem that stands between them and it.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:stretch;max-width:72rem;margin:0 auto">
+      <!-- LEFT: Story + business metrics -->
+      <div class="fade-in" style="display:flex;flex-direction:column;gap:1rem">
+        <div class="card-light" style="border-left:4px solid var(--amber-500)">
+          <p style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-500);margin-bottom:.5rem">The Customer Asks</p>
+          <p style="font-size:1.1rem;font-weight:700;color:var(--slate-900);margin-bottom:.5rem">"I'd like the black dial Promaster."</p>
+          <p style="font-size:.9rem;color:var(--slate-500);line-height:1.65">The associate checks inventory. Expression shifts.</p>
+        </div>
+        <div class="card-light" style="border-left:4px solid var(--red-400)">
+          <p style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red-400);margin-bottom:.75rem">Shelf Label</p>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--slate-900);margin-bottom:.5rem">BLACK DIAL</div>
+          <span style="display:inline-block;padding:.25rem .75rem;background:rgba(251,44,54,.08);border-radius:.375rem;font-size:.72rem;font-weight:700;color:var(--red-500);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem">BACKORDERED</span>
+          <p style="font-size:.95rem;color:var(--slate-700);line-height:1.7;font-style:italic;margin-bottom:.75rem">"I only have the blue dial. The black dial you wanted is backordered."</p>
+          <p style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red-400)">This is the problem.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem">
+          <div style="padding:.875rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100);text-align:center">
+            <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.375rem">Margin</div>
+            <div style="font-size:1.25rem;font-weight:800;color:var(--slate-900);letter-spacing:-.02em">$245</div>
+            <div style="font-size:.7rem;color:var(--slate-400)">/unit</div>
+          </div>
+          <div style="padding:.875rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100);text-align:center">
+            <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.375rem">Demand</div>
+            <div style="font-size:1.25rem;font-weight:800;color:var(--slate-900);letter-spacing:-.02em">#1 SKU</div>
+            <div style="font-size:.7rem;color:var(--slate-400)">Tourneau · Nordstrom</div>
+          </div>
+          <div style="padding:.875rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100);text-align:center">
+            <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.375rem">Velocity</div>
+            <div style="font-size:1.25rem;font-weight:800;color:var(--slate-900);letter-spacing:-.02em">3× Q4</div>
+            <div style="font-size:.7rem;color:var(--slate-400)">sell-through</div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Watch image centered -->
+      <div class="fade-in card-light" style="padding:2rem;display:flex;align-items:center;justify-content:center">
+        <img src="citizen-promaster-diver.png" alt="Citizen Eco-Drive Promaster Diver" style="width:100%;max-width:320px;object-fit:contain;filter:drop-shadow(0 8px 32px rgba(0,0,0,.15))">
+      </div>
+    </div>
+
+    <!-- "The Truth" — full-width callout + bridge -->
+    <div id="truth-reveal" class="fade-in" style="max-width:72rem;margin:.875rem auto 0">
+      <div style="background:var(--brand-700);border-radius:var(--radius-card);padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap">
+        <div>
+          <p style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-200);margin-bottom:.625rem">The Truth</p>
+          <p style="font-size:1.5rem;font-weight:800;color:#fff;line-height:1.3;letter-spacing:-.02em">The black dial exists.<br>It's in the wrong place.</p>
+        </div>
+        <div style="text-align:right">
+          <p style="font-size:.9rem;color:var(--brand-200);line-height:1.65;max-width:22rem">This plays out across 400+ inventory locations every allocation cycle — not because the stock is gone, but because no system knows where it is.</p>
+          <a href="#problem" style="display:inline-flex;align-items:center;gap:.375rem;margin-top:1rem;font-size:.8rem;font-weight:700;color:rgba(255,255,255,.65);transition:color .15s">See the three reasons why →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THE PROBLEM
+══════════════════════════════════════════ -->
+<section id="problem" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:42rem;margin:0 auto 3.5rem">
+      <p class="eyebrow" style="color:var(--brand-700)">The Challenge</p>
+      <h2 style="color:var(--brand-700);margin-bottom:1rem">Three reasons Excel breaks<br>at this scale</h2>
+      <p class="lead">4 brands. 130+ markets. 400+ locations. Manual allocation doesn't just slow you down — it leaks revenue every single cycle.</p>
+    </div>
+
+    <!-- 3 challenge accordion cards -->
+    <div class="fade-in" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:3rem">
+
+      <!-- Card 1: No Revenue Prioritization -->
+      <div class="use-card" style="justify-content:flex-start;min-height:0">
+        <div class="use-card-bg" style="background-image:url('images-3.jpeg');filter:brightness(.5)"></div>
+        <div class="use-card-overlay" style="background:linear-gradient(to bottom,rgba(0,20,74,.9) 0%,rgba(0,20,74,.8) 100%)"></div>
+        <div class="use-card-content">
+          <span class="badge badge-amber" style="margin-bottom:.875rem">No Revenue Prioritization</span>
+          <h3 style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.35">High-margin orders deprioritized by default</h3>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div>
+              <button class="chal-toggle" onclick="toggleChal(this)">
+                <span>Who's affected &amp; how</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body"><div class="chal-body-inner">
+                <p style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:.125rem">Carlo Bonini · CFO &amp; COO</p>
+                <ul class="chal-list">
+                  <li>Margin walks out the door every allocation cycle</li>
+                  <li>FIFO has no concept of order value or customer tier</li>
+                </ul>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Siloed Inventory -->
+      <div class="use-card" style="justify-content:flex-start;min-height:0">
+        <div class="use-card-bg" style="background-image:url('images-2.jpeg');filter:brightness(.4)"></div>
+        <div class="use-card-overlay" style="background:linear-gradient(to bottom,rgba(15,23,43,.9) 0%,rgba(15,23,43,.8) 100%)"></div>
+        <div class="use-card-content">
+          <span class="badge badge-amber" style="margin-bottom:.875rem">Siloed Inventory</span>
+          <h3 style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.35">The stock exists. The system just can't see across locations to find it.</h3>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div>
+              <button class="chal-toggle" onclick="toggleChal(this)">
+                <span>Who's affected &amp; how</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body"><div class="chal-body-inner">
+                <p style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:.125rem">Glenn Pascrell · EVP Supply Chain</p>
+                <ul class="chal-list">
+                  <li>400+ locations with no unified visibility</li>
+                  <li>Can't reallocate what he can't see</li>
+                </ul>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: No Decision Visibility -->
+      <div class="use-card" style="justify-content:flex-start;min-height:0">
+        <div class="use-card-bg" style="background-image:url('images-4.jpeg');filter:brightness(.4)"></div>
+        <div class="use-card-overlay" style="background:linear-gradient(to bottom,rgba(15,23,43,.9) 0%,rgba(15,23,43,.8) 100%)"></div>
+        <div class="use-card-content">
+          <span class="badge badge-amber" style="margin-bottom:.875rem">No Decision Visibility</span>
+          <h3 style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.35">When an order is deferred, no one can explain why</h3>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div>
+              <button class="chal-toggle" onclick="toggleChal(this)">
+                <span>Who's affected &amp; how</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body"><div class="chal-body-inner">
+                <p style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:.125rem">Gary Cabral · Director, Order Mgmt</p>
+                <ul class="chal-list">
+                  <li>Can't tell a retailer why their order slipped</li>
+                  <li>No rationale or audit trail behind allocation calls</li>
+                </ul>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THE SOLUTION
+══════════════════════════════════════════ -->
+<section id="solution" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="max-width:44rem;margin:0 auto 1rem;text-align:center">
+      <p class="eyebrow eyebrow-dark">The Solution</p>
+      <h2 style="margin-bottom:1rem">A custom AI agent built in Joule Studio 2.0</h2>
+      <p class="lead">Here's what I'm going to show you — the three challenges, and how the agent clears each one.</p>
+    </div>
+    <div id="s5-list" class="fade-in" style="display:flex;flex-direction:column;gap:.625rem;max-width:58rem;margin:0 auto .75rem">
+      <div class="s5-row" style="display:flex;gap:1.25rem;align-items:center;background:#fff;border:1px solid var(--slate-200);border-radius:.85rem;box-shadow:var(--shadow-card);padding:.7rem 1.25rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--brand-500);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;font-weight:800;color:#fff">1</div>
+        <p style="font-size:1rem;font-weight:700;color:var(--slate-900);line-height:1.4">Every order scored by revenue — the highest-value ships first</p>
+      </div>
+      <div class="s5-row" style="display:flex;gap:1.25rem;align-items:center;background:#fff;border:1px solid var(--slate-200);border-radius:.85rem;box-shadow:var(--shadow-card);padding:.7rem 1.25rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--brand-500);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;font-weight:800;color:#fff">2</div>
+        <p style="font-size:1rem;font-weight:700;color:var(--slate-900);line-height:1.4">One live view of all 400+ locations — and it reallocates in seconds</p>
+      </div>
+      <div class="s5-row" style="display:flex;gap:1.25rem;align-items:center;background:#fff;border:1px solid var(--slate-200);border-radius:.85rem;box-shadow:var(--shadow-card);padding:.7rem 1.25rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--brand-500);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;font-weight:800;color:#fff">3</div>
+        <p style="font-size:1rem;font-weight:700;color:var(--slate-900);line-height:1.4">Ask Joule anything — every allocation decision explained in plain language</p>
+      </div>
+    </div>
+    <div class="fade-in" style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;max-width:58rem;margin:0 auto">
+      <span class="badge badge-brand">SAP BTP</span>
+      <span class="badge badge-brand">Joule Studio 2.0 · GA Oct 2026</span>
+      <span class="badge badge-brand">Agent Builder</span>
+    </div>
+
+    <!-- HOW IT SCORES (merged from The Algorithm) -->
+    <div class="fade-in" style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(0,0,0,.08)">
+      <div style="text-align:center;max-width:40rem;margin:0 auto .625rem">
+        <p class="eyebrow eyebrow-dark">The Algorithm</p>
+        <h2 style="margin-bottom:.375rem;font-size:clamp(1.35rem,2.2vw,1.75rem)">How the agent scores every order</h2>
+        <p class="lead" style="font-size:.9rem">Three weighted inputs. One priority score. Highest score gets fulfilled first.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;max-width:56rem;margin:0 auto .5rem">
+        <div style="border-radius:.75rem;border:1px solid var(--slate-200);background:#fff;padding:.6rem .85rem;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-card)">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--red-500)"></div>
+          <div style="font-size:1.9rem;font-weight:800;color:var(--red-500);letter-spacing:-.04em;line-height:1;margin-bottom:.3rem">40%</div>
+          <div style="font-size:.9rem;font-weight:700;color:var(--slate-900)">Penalty Risk</div>
+          <div style="font-size:.68rem;color:var(--slate-400);margin-bottom:.4rem">1–10 scale</div>
+          <div style="font-size:.75rem;color:var(--slate-600);line-height:1.45">Risk of SLA breach or retailer chargeback if the order isn't fulfilled on time.</div>
+        </div>
+        <div style="border-radius:.75rem;border:1px solid rgba(201,168,76,.35);background:rgba(201,168,76,.06);padding:.6rem .85rem;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-card)">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold)"></div>
+          <div style="font-size:1.9rem;font-weight:800;color:#a9862f;letter-spacing:-.04em;line-height:1;margin-bottom:.3rem">35%</div>
+          <div style="font-size:.9rem;font-weight:700;color:var(--slate-900)">Margin</div>
+          <div style="font-size:.68rem;color:var(--slate-400);margin-bottom:.4rem">1–10 scale</div>
+          <div style="font-size:.75rem;color:var(--slate-600);line-height:1.45">How much profit Citizen earns per unit sold — the more profitable the SKU, the higher it scores.</div>
+        </div>
+        <div style="border-radius:.75rem;border:1px solid var(--slate-200);background:#fff;padding:.6rem .85rem;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-card)">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--brand-500)"></div>
+          <div style="font-size:1.9rem;font-weight:800;color:var(--brand-500);letter-spacing:-.04em;line-height:1;margin-bottom:.3rem">25%</div>
+          <div style="font-size:.9rem;font-weight:700;color:var(--slate-900)">Strategic Tier</div>
+          <div style="font-size:.68rem;color:var(--slate-400);margin-bottom:.4rem">T1=10 · T2=6 · T3=3</div>
+          <div style="font-size:.75rem;color:var(--slate-600);line-height:1.45">Importance of the account to Citizen's long-term strategy — T1 includes key accounts like Tourneau and Nordstrom.</div>
+        </div>
+      </div>
+      <div style="max-width:56rem;margin:0 auto">
+        <div style="background:var(--surface-dark);border-radius:.75rem;padding:.5rem 1.5rem;font-family:'SF Mono','Fira Code',monospace;font-size:.85rem;color:#E8C96A;letter-spacing:.02em;text-align:center">
+          Priority Score = (Margin × 0.35) + (Penalty Risk × 0.40) + (Tier × 0.25)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THE PROBLEM (COPY)
+══════════════════════════════════════════ -->
+<section id="problem-2" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:46rem;margin:0 auto 3.5rem">
+      <div class="stack" style="margin-bottom:.75rem">
+        <p class="eyebrow p2-eye-old" style="color:var(--brand-700)">Before</p>
+        <p class="eyebrow p2-eye-new" style="color:var(--green-700)">Recap</p>
+      </div>
+      <div class="stack" style="margin-bottom:1rem">
+        <h2 class="p2-old" style="color:var(--brand-700)">The way allocation<br>works today</h2>
+        <h2 class="p2-new"><span class="gradient-text">Here's what<br>you just saw.</span></h2>
+      </div>
+      <div class="stack">
+        <p class="lead p2-sub-old">4 brands. 130+ markets. 400+ locations — every cycle allocated by hand.</p>
+        <p class="lead p2-sub-new">In a single cycle, the agent scored every order by revenue, reallocated stock across all 400+ locations, and confirmed ATP in S/4HANA — in seconds.</p>
+      </div>
+    </div>
+
+    <!-- 3 challenge accordion cards -->
+    <div class="fade-in" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:3rem">
+
+      <!-- Card 1: No Revenue Prioritization -->
+      <div class="use-card" style="justify-content:flex-start;min-height:0">
+        <div class="use-card-bg" style="background-image:url('images-3.jpeg');filter:brightness(.5)"></div>
+        <div class="use-card-overlay" style="background:linear-gradient(to bottom,rgba(0,20,74,.9) 0%,rgba(0,20,74,.8) 100%)"></div>
+        <div class="use-card-content">
+          <span class="p2-badge-wrap">
+            <span class="badge badge-amber p2-badge-old">No Revenue Prioritization</span>
+            <span class="badge p2-badge-new">✓ Solved</span>
+          </span>
+          <h3 style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.35">High-margin orders deprioritized by default</h3>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div>
+              <button class="chal-toggle" onclick="toggleChal(this)">
+                <span>Who's affected &amp; how</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body"><div class="chal-body-inner">
+                <p style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:.125rem">Carlo Bonini · CFO &amp; COO</p>
+                <ul class="chal-list">
+                  <li>Margin walks out the door every allocation cycle</li>
+                  <li>FIFO has no concept of order value or customer tier</li>
+                </ul>
+              </div></div>
+            </div>
+            <div>
+              <button class="chal-toggle chal-toggle--ai" onclick="toggleChal(this)">
+                <span>With Joule Studio 2.0</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body chal-body--ai"><div class="chal-body-inner">
+                <ul class="chal-list chal-list--ai">
+                  <li>Every order scored by revenue — the highest-value ships first</li>
+                  <li>Scored on margin × penalty risk × strategic tier</li>
+                  <li>Applied automatically every cycle</li>
+                </ul>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Siloed Inventory -->
+      <div class="use-card" style="justify-content:flex-start;min-height:0">
+        <div class="use-card-bg" style="background-image:url('images-2.jpeg');filter:brightness(.4)"></div>
+        <div class="use-card-overlay" style="background:linear-gradient(to bottom,rgba(15,23,43,.9) 0%,rgba(15,23,43,.8) 100%)"></div>
+        <div class="use-card-content">
+          <span class="p2-badge-wrap">
+            <span class="badge badge-amber p2-badge-old">Siloed Inventory</span>
+            <span class="badge p2-badge-new">✓ Solved</span>
+          </span>
+          <h3 style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.35">The stock exists. The system just can't see across locations to find it.</h3>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div>
+              <button class="chal-toggle" onclick="toggleChal(this)">
+                <span>Who's affected &amp; how</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body"><div class="chal-body-inner">
+                <p style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:.125rem">Glenn Pascrell · EVP Supply Chain</p>
+                <ul class="chal-list">
+                  <li>400+ locations with no unified visibility</li>
+                  <li>Can't reallocate what he can't see</li>
+                </ul>
+              </div></div>
+            </div>
+            <div>
+              <button class="chal-toggle chal-toggle--ai" onclick="toggleChal(this)">
+                <span>With Joule Studio 2.0</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body chal-body--ai"><div class="chal-body-inner">
+                <ul class="chal-list chal-list--ai">
+                  <li>One live view of all 400+ locations — and it reallocates in seconds</li>
+                  <li>Finds available stock across every channel</li>
+                  <li>Zero manual intervention</li>
+                </ul>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: No Decision Visibility -->
+      <div class="use-card" style="justify-content:flex-start;min-height:0">
+        <div class="use-card-bg" style="background-image:url('images-4.jpeg');filter:brightness(.4)"></div>
+        <div class="use-card-overlay" style="background:linear-gradient(to bottom,rgba(15,23,43,.9) 0%,rgba(15,23,43,.8) 100%)"></div>
+        <div class="use-card-content">
+          <span class="p2-badge-wrap">
+            <span class="badge badge-amber p2-badge-old">No Decision Visibility</span>
+            <span class="badge p2-badge-new">✓ Solved</span>
+          </span>
+          <h3 style="font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:1rem;line-height:1.35">When an order is deferred, no one can explain why</h3>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div>
+              <button class="chal-toggle" onclick="toggleChal(this)">
+                <span>Who's affected &amp; how</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body"><div class="chal-body-inner">
+                <p style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:.125rem">Gary Cabral · Director, Order Mgmt</p>
+                <ul class="chal-list">
+                  <li>Can't tell a retailer why their order slipped</li>
+                  <li>No rationale or audit trail behind allocation calls</li>
+                </ul>
+              </div></div>
+            </div>
+            <div>
+              <button class="chal-toggle chal-toggle--ai" onclick="toggleChal(this)">
+                <span>With Joule Studio 2.0</span>
+                <svg class="chal-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="chal-body chal-body--ai"><div class="chal-body-inner">
+                <ul class="chal-list chal-list--ai">
+                  <li>Ask Joule anything — every allocation decision explained in plain language</li>
+                  <li>Plain-language rationale for every call</li>
+                  <li>Full transparency, on demand</li>
+                </ul>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     JOULE STUDIO 2.0 — BUILD PIPELINE
+══════════════════════════════════════════ -->
+<section id="build" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:42rem;margin:0 auto 3.5rem">
+      <p class="eyebrow eyebrow-light">Joule Studio 2.0</p>
+      <h2 style="color:#fff;margin-bottom:1rem">From intent to<br><span class="gradient-text">deployable agent.</span></h2>
+      <p style="font-size:1rem;color:var(--brand-200);line-height:1.7">Six AI-assisted stages — each step generates the next, from a plain-language business problem to a running agent on BTP.</p>
+    </div>
+
+    <div class="fade-in" style="display:flex;align-items:flex-start;gap:.5rem;max-width:72rem;margin:0 auto">
+
+      <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.75rem;padding:1.25rem 1rem;text-align:center;min-width:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green-400);margin:0 auto .75rem"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.375rem">01</div>
+        <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.5rem">Intent</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5">Define the business problem in plain language</div>
+      </div>
+
+      <div style="color:rgba(255,255,255,.25);font-size:1rem;align-self:center;flex-shrink:0">→</div>
+
+      <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.75rem;padding:1.25rem 1rem;text-align:center;min-width:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green-400);margin:0 auto .75rem"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.375rem">02</div>
+        <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.5rem">Requirements</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5">AI generates functional requirements from intent</div>
+      </div>
+
+      <div style="color:rgba(255,255,255,.25);font-size:1rem;align-self:center;flex-shrink:0">→</div>
+
+      <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.75rem;padding:1.25rem 1rem;text-align:center;min-width:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green-400);margin:0 auto .75rem"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.375rem">03</div>
+        <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.5rem">Specification</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5">Detailed technical spec and data model produced</div>
+      </div>
+
+      <div style="color:rgba(255,255,255,.25);font-size:1rem;align-self:center;flex-shrink:0">→</div>
+
+      <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.75rem;padding:1.25rem 1rem;text-align:center;min-width:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green-400);margin:0 auto .75rem"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.375rem">04</div>
+        <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.5rem">Solution</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5">Agent architecture and code generated by AI</div>
+      </div>
+
+      <div style="color:rgba(255,255,255,.25);font-size:1rem;align-self:center;flex-shrink:0">→</div>
+
+      <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.75rem;padding:1.25rem 1rem;text-align:center;min-width:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green-400);margin:0 auto .75rem"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.375rem">05</div>
+        <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.5rem">Testing</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5">Automated scenarios validated before deployment</div>
+      </div>
+
+      <div style="color:rgba(255,255,255,.25);font-size:1rem;align-self:center;flex-shrink:0">→</div>
+
+      <div style="flex:1;background:rgba(0,112,242,.1);border:1px solid rgba(0,112,242,.3);border-radius:.75rem;padding:1.25rem 1rem;text-align:center;min-width:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--brand-500);margin:0 auto .75rem"></div>
+        <div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.375rem">06</div>
+        <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.5rem">Deployment</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5">Agent deployed to SAP BTP production</div>
+      </div>
+
+    </div>
+
+    <!-- Intent fit callout -->
+    <div class="fade-in" style="max-width:72rem;margin:2rem auto 0">
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:1.25rem 1.75rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
+        <div style="flex-shrink:0">
+          <p style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-200);margin-bottom:.375rem">Intent Fit</p>
+          <p style="font-size:2rem;font-weight:800;color:#fff;line-height:1">92%</p>
+        </div>
+        <div style="flex:1;min-width:0">
+          <p style="font-size:.875rem;color:rgba(255,255,255,.6);line-height:1.65">Joule scored this agent's alignment with the business intent before a single line of code was written — giving the team confidence before committing to build.</p>
+        </div>
+        <span class="badge badge-glass">Citizen Watch · Inventory Allocation Agent</span>
+      </div>
+    </div>
+
+    <div class="fade-in" style="text-align:center;margin-top:1.75rem">
+      <a href="https://0210824905.eu12.sapdas.cloud.sap/new/build/solutions/bb19fe4c-dbb8-4c86-83b2-e5c9a3dd7610/overview?showList=1" target="_blank" rel="noopener" class="btn-primary" style="padding:.75rem 1.75rem;font-size:.9rem">Open in Joule Studio 2.0 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TECH STACK
+══════════════════════════════════════════ -->
+<section id="stack" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:42rem;margin:0 auto 3.5rem">
+      <p class="eyebrow eyebrow-dark">Architecture</p>
+      <h2 style="margin-bottom:1rem">The Technology Stack</h2>
+      <p class="lead">Built entirely on SAP BTP. Citizen already runs SAP Commerce Cloud — no new vendor, no new integration.</p>
+    </div>
+
+    <!-- Flow -->
+    <div class="fade-in" style="display:flex;align-items:center;gap:.625rem;margin-bottom:3rem;max-width:72rem;margin-left:auto;margin-right:auto">
+      <div style="display:flex;flex-direction:column;gap:.625rem;flex:1">
+        <div style="background:var(--slate-100);border:1px solid var(--slate-200);border-radius:.75rem;padding:.75rem 1rem;text-align:center">
+          <p style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.375rem">Source</p>
+          <p style="font-size:.85rem;font-weight:700;color:var(--slate-800);margin-bottom:.25rem">S/4HANA</p>
+          <p style="font-size:.65rem;color:var(--slate-500);line-height:1.5">Inventory levels · stock locations · ATP · allocation rules</p>
+        </div>
+        <div style="background:rgba(0,112,242,.06);border:1px solid rgba(0,112,242,.2);border-radius:.75rem;padding:.75rem 1rem;text-align:center">
+          <p style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.375rem">Demand</p>
+          <p style="font-size:.85rem;font-weight:700;color:var(--brand-700);margin-bottom:.25rem">Commerce Cloud</p>
+          <p style="font-size:.65rem;color:var(--slate-500);line-height:1.5">Sales velocity · cart signals · order history · channel demand</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-self:stretch;justify-content:space-evenly;flex-shrink:0">
+        <div style="color:var(--brand-500);font-size:1.25rem;opacity:.6;text-align:center;transform:rotate(25deg)">→</div>
+        <div style="color:var(--brand-500);font-size:1.25rem;opacity:.6;text-align:center;transform:rotate(-25deg)">→</div>
+      </div>
+      <div style="background:var(--brand-50);border:1px solid var(--brand-200);border-radius:.75rem;padding:.75rem 1rem;text-align:center;flex:1">
+        <p style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.375rem">Agent</p>
+        <p style="font-size:.85rem;font-weight:700;color:var(--brand-700)">Joule Studio 2.0 Agent</p>
+      </div>
+      <div style="color:var(--brand-500);font-size:1.25rem;align-self:center;opacity:.6;flex-shrink:0">→</div>
+      <div style="background:var(--slate-100);border:1px solid var(--slate-200);border-radius:.75rem;padding:.75rem 1rem;text-align:center;flex:1">
+        <p style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);margin-bottom:.375rem">Review</p>
+        <p style="font-size:.85rem;font-weight:700;color:var(--slate-800)">Human Approval</p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-self:stretch;justify-content:space-evenly;flex-shrink:0">
+        <div style="color:var(--brand-500);font-size:1.25rem;opacity:.6;text-align:center;transform:rotate(-25deg)">→</div>
+        <div style="color:var(--brand-500);font-size:1.25rem;opacity:.6;text-align:center;transform:rotate(25deg)">→</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.625rem;flex:1">
+        <div style="background:rgba(0,129,56,.06);border:1px solid rgba(0,129,56,.2);border-radius:.75rem;padding:1.25rem 1.5rem;text-align:center;flex:1">
+          <p style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green-700);margin-bottom:.5rem">S/4HANA</p>
+          <p style="font-size:1rem;font-weight:700;color:var(--green-700)">Changes Made</p>
+        </div>
+        <div style="background:rgba(0,112,242,.06);border:1px solid rgba(0,112,242,.2);border-radius:.75rem;padding:1.25rem 1.5rem;text-align:center;flex:1">
+          <p style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.5rem">Notification</p>
+          <p style="font-size:1rem;font-weight:700;color:var(--brand-600)">Email Sent</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-in" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:72rem;margin:0 auto">
+      <div class="card-light">
+        <p style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.625rem">SAP Generative AI Hub</p>
+        <p style="font-size:.85rem;color:var(--slate-600);line-height:1.6">Claude 3.5 / GPT-4o for agent reasoning and scoring</p>
+      </div>
+      <div class="card-light">
+        <p style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.625rem">SAP AI Agent Hub</p>
+        <p style="font-size:.85rem;color:var(--slate-600);line-height:1.6">Central registry of every deployed agent — full audit trail, policy guardrails, and role-based controls so you always know what the agent did and why</p>
+      </div>
+      <div class="card-light">
+        <p style="font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.625rem">Build Process Automation</p>
+        <p style="font-size:.85rem;color:var(--slate-600);line-height:1.6">Exception handling and human approval workflows</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WHY SAP / WHY NOW
+══════════════════════════════════════════ -->
+<section id="why-now" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:40rem;margin:0 auto 3.5rem">
+      <p class="eyebrow eyebrow-dark">The Case</p>
+      <h2 style="margin-bottom:1rem">Why SAP. <span class="gradient-text">Why now.</span></h2>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;max-width:72rem;margin:0 auto">
+      <div class="fade-in card-light" style="border-top:4px solid var(--brand-500)">
+        <p class="eyebrow eyebrow-dark" style="margin-bottom:1.25rem">Why SAP</p>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div style="display:flex;gap:.75rem;align-items:flex-start;padding-bottom:1rem;border-bottom:1px solid var(--slate-100)">
+            <span style="color:var(--brand-500);font-size:1rem;flex-shrink:0;margin-top:.1rem">→</span>
+            <div><p style="font-size:.9rem;font-weight:600;color:var(--slate-800);margin-bottom:.25rem">SAP S/4HANA Public Cloud</p><p style="font-size:.82rem;color:var(--slate-500)">Active deployment — no new platform</p></div>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="color:var(--brand-500);font-size:1rem;flex-shrink:0;margin-top:.1rem">→</span>
+            <div><p style="font-size:.9rem;font-weight:600;color:var(--slate-800);margin-bottom:.25rem">Joule Studio 2.0 GA October 2026</p><p style="font-size:.82rem;color:var(--slate-500)">Production-ready today — not a roadmap item</p></div>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="color:var(--brand-500);font-size:1rem;flex-shrink:0;margin-top:.1rem">→</span>
+            <div><p style="font-size:.9rem;font-weight:600;color:var(--slate-800);margin-bottom:.25rem">The context AI needs already lives in SAP</p><p style="font-size:.82rem;color:var(--slate-500)">We have the business processes and data — and data context is what matters most with AI</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="fade-in card-light" style="border-top:4px solid var(--amber-500)">
+        <p class="eyebrow" style="color:var(--amber-500);margin-bottom:1.25rem">Why Now</p>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div style="display:flex;gap:.75rem;align-items:flex-start;padding-bottom:1rem;border-bottom:1px solid var(--slate-100)">
+            <span style="color:var(--amber-500);font-size:1rem;flex-shrink:0;margin-top:.1rem">→</span>
+            <div><p style="font-size:.9rem;font-weight:600;color:var(--slate-800);margin-bottom:.25rem">Peak season allocation starts in 8 weeks</p><p style="font-size:.82rem;color:var(--slate-500)">November–December is the highest-margin window of the year — scope the PoC now, or run the same broken process through it again.</p></div>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:flex-start;padding-bottom:1rem;border-bottom:1px solid var(--slate-100)">
+            <span style="color:var(--amber-500);font-size:1rem;flex-shrink:0;margin-top:.1rem">→</span>
+            <div><p style="font-size:.9rem;font-weight:600;color:var(--slate-800);margin-bottom:.25rem">Revenue leaking in real time</p><p style="font-size:.82rem;color:var(--slate-500)">$200K+ in revenue at risk per allocation cycle — every manual run is a revenue decision made without AI optimization</p></div>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="color:var(--amber-500);font-size:1rem;flex-shrink:0;margin-top:.1rem">→</span>
+            <div><p style="font-size:.9rem;font-weight:600;color:var(--slate-800);margin-bottom:.25rem">BTP EA Credits available now</p><p style="font-size:.82rem;color:var(--slate-500)">Funded investment — the PoC can begin without a new budget line</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in" style="max-width:72rem;margin:1.5rem auto 0">
+      <div style="background:var(--brand-700);border-radius:var(--radius-card);padding:1.25rem 2rem;text-align:center">
+        <p style="font-size:1.05rem;font-weight:700;color:#fff">This is not a future roadmap item. <span style="color:var(--brand-200)">The capability is production-ready today.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CUSTOMER REFERENCES
+══════════════════════════════════════════ -->
+<section id="references" class="section-pad" style="padding-bottom:2.5rem">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:42rem;margin:0 auto 2rem">
+      <p class="eyebrow eyebrow-dark">Customer Reference</p>
+      <h2 style="margin-bottom:.75rem">Proven in retail. <span class="gradient-text">Built on BTP.</span></h2>
+      <p class="lead" style="font-size:1rem">A live deployment that mirrors Citizen's inventory allocation challenge — and proves the architecture works.</p>
+    </div>
+
+    <div class="fade-in card-light" style="max-width:72rem;margin:0 auto;border-top:4px solid var(--brand-500);padding:2rem 2.5rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start">
+
+        <!-- Left: company + challenge + solution -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.375rem">
+              <p style="font-size:1.35rem;font-weight:800;color:var(--slate-900)">Foodstuffs North Island</p>
+              <span class="badge badge-outline">New Zealand · Retail</span>
+            </div>
+            <p style="font-size:.85rem;color:var(--slate-500)">300+ retail stores · PAK'nSAVE &amp; New World</p>
+          </div>
+          <div style="height:1px;background:var(--slate-100)"></div>
+          <div>
+            <p style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-500);margin-bottom:.375rem">Challenge</p>
+            <p style="font-size:.9rem;color:var(--slate-700);line-height:1.6">Siloed inventory and demand data across 300+ stores. No unified view. No accurate allocation.</p>
+          </div>
+          <div>
+            <p style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.375rem">SAP Solution</p>
+            <p style="font-size:.9rem;color:var(--slate-700);line-height:1.8">SAP BTP · Integration Suite · Build Work Zone<br>BDC · Analytics Cloud · Datasphere</p>
+          </div>
+        </div>
+
+        <!-- Right: outcome + validation -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+          <div style="background:rgba(0,129,56,.05);border:1px solid rgba(0,129,56,.2);border-radius:.75rem;padding:1.25rem 1.5rem">
+            <p style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin-bottom:.625rem">Outcomes</p>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+              <div style="display:flex;gap:.625rem;align-items:baseline">
+                <span style="color:var(--green-700);font-size:.8rem;flex-shrink:0">→</span>
+                <p style="font-size:.875rem;color:var(--slate-700)">Deployed to <strong>141 users</strong>, scaling to <strong>300+ stores</strong></p>
+              </div>
+              <div style="display:flex;gap:.625rem;align-items:baseline">
+                <span style="color:var(--green-700);font-size:.8rem;flex-shrink:0">→</span>
+                <p style="font-size:.875rem;color:var(--slate-700)">Demand-segmented forecasting, top-down and bottom-up</p>
+              </div>
+              <div style="display:flex;gap:.625rem;align-items:baseline">
+                <span style="color:var(--green-700);font-size:.8rem;flex-shrink:0">→</span>
+                <p style="font-size:.875rem;color:var(--slate-700)"><strong>Single source of truth</strong> regardless of data origin</p>
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--brand-700);border-radius:.75rem;padding:1.25rem 1.5rem">
+            <p style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-200);margin-bottom:.375rem">CTO Resonance</p>
+            <p style="font-size:.875rem;color:#fff;line-height:1.65">BTP unifies SAP and non-SAP data at scale across hundreds of retail locations. Exact architecture Citizen needs.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="height:1px;background:var(--slate-100);margin:1.75rem 0 1.5rem"></div>
+
+      <div>
+        <p style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-500);margin-bottom:1rem;text-align:center">Why this maps to Citizen</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+
+          <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:.75rem;padding:1rem 1.25rem">
+            <p style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-400);margin-bottom:.5rem">Scale</p>
+            <p style="font-size:.82rem;color:var(--slate-500);line-height:1.5">300+ retail stores</p>
+            <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem">
+              <span style="color:var(--brand-500);font-size:.9rem;flex-shrink:0">→</span>
+              <p style="font-size:.85rem;font-weight:700;color:var(--slate-800);line-height:1.4">4 brands · 400+ inventory locations</p>
+            </div>
+          </div>
+
+          <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:.75rem;padding:1rem 1.25rem">
+            <p style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-400);margin-bottom:.5rem">Problem</p>
+            <p style="font-size:.82rem;color:var(--slate-500);line-height:1.5">Siloed inventory &amp; demand data</p>
+            <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem">
+              <span style="color:var(--brand-500);font-size:.9rem;flex-shrink:0">→</span>
+              <p style="font-size:.85rem;font-weight:700;color:var(--slate-800);line-height:1.4">Excel-based manual allocation</p>
+            </div>
+          </div>
+
+          <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:.75rem;padding:1rem 1.25rem">
+            <p style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-400);margin-bottom:.5rem">Outcome</p>
+            <p style="font-size:.82rem;color:var(--slate-500);line-height:1.5">Single source of truth, SAP + non-SAP</p>
+            <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem">
+              <span style="color:var(--green-700);font-size:.9rem;flex-shrink:0">→</span>
+              <p style="font-size:.85rem;font-weight:700;color:var(--slate-800);line-height:1.4">Cross-channel visibility, ATP in S/4HANA</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     RESOLUTION — CLOSING THE LOOP
+══════════════════════════════════════════ -->
+<section id="resolution" class="section-pad">
+  <div class="container">
+    <div class="fade-in" style="text-align:center;max-width:42rem;margin:0 auto 1.75rem">
+      <p class="eyebrow" style="color:var(--green-700)">Full Circle</p>
+      <h2 style="margin-bottom:.75rem">The customer gets the watch they wanted</h2>
+      <p class="lead">Same customer. Same black dial Promaster. This time it's already on the shelf — the agent put the stock where the demand was, before the customer ever walked in.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:stretch;max-width:72rem;margin:0 auto">
+      <!-- LEFT: Resolution story + business win -->
+      <div class="fade-in" style="display:flex;flex-direction:column;gap:.625rem">
+        <div class="card-light" style="border-left:4px solid var(--brand-500)">
+          <p style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.5rem">The Customer Asks</p>
+          <p style="font-size:1.1rem;font-weight:700;color:var(--slate-900);margin-bottom:.5rem">"I'd like the black dial Promaster."</p>
+          <p style="font-size:.9rem;color:var(--slate-500);line-height:1.65">The associate checks inventory. This time, the answer is yes.</p>
+        </div>
+        <div class="card-light" style="border-left:4px solid var(--green-700)">
+          <p style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin-bottom:.75rem">Shelf Label</p>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--slate-900);margin-bottom:.5rem">BLACK DIAL</div>
+          <span style="display:inline-block;padding:.25rem .75rem;background:rgba(0,129,56,.1);border-radius:.375rem;font-size:.72rem;font-weight:700;color:var(--green-700);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem">IN STOCK · THIS LOCATION</span>
+          <p style="font-size:.95rem;color:var(--slate-700);line-height:1.7;font-style:italic;margin-bottom:.75rem">"Good news — the black dial's right here. In stock, ready to take home today."</p>
+          <p style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green-700)">This is the payoff.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem">
+          <div style="padding:.625rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100);text-align:center">
+            <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin-bottom:.25rem">Sale</div>
+            <div style="font-size:1.25rem;font-weight:800;color:var(--slate-900);letter-spacing:-.02em">Won</div>
+            <div style="font-size:.7rem;color:var(--slate-400)">$245 margin kept</div>
+          </div>
+          <div style="padding:.625rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100);text-align:center">
+            <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin-bottom:.25rem">Confirm</div>
+            <div style="font-size:1.25rem;font-weight:800;color:var(--slate-900);letter-spacing:-.02em">&lt;60s</div>
+            <div style="font-size:.7rem;color:var(--slate-400)">in S/4HANA</div>
+          </div>
+          <div style="padding:.625rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100);text-align:center">
+            <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green-700);margin-bottom:.25rem">Customer</div>
+            <div style="font-size:1.25rem;font-weight:800;color:var(--slate-900);letter-spacing:-.02em">Kept</div>
+            <div style="font-size:.7rem;color:var(--slate-400)">no walkout</div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: Watch image centered -->
+      <div class="fade-in card-light" style="padding:1.25rem;display:flex;align-items:center;justify-content:center">
+        <img src="citizen-promaster-diver.png" alt="Citizen Eco-Drive Promaster Diver" style="width:100%;max-width:320px;object-fit:contain;filter:drop-shadow(0 8px 32px rgba(0,0,0,.15))">
+      </div>
+    </div>
+
+    <!-- Closing callout -->
+    <div class="fade-in" style="max-width:72rem;margin:.5rem auto 0">
+      <div style="background:var(--green-700);border-radius:var(--radius-card);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap">
+        <div>
+          <p style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:.375rem">The Loop, Closed</p>
+          <p style="font-size:1.25rem;font-weight:800;color:#fff;line-height:1.3;letter-spacing:-.02em">The black dial was always in the network.<br>Now it's already on the shelf.</p>
+        </div>
+        <div style="text-align:right">
+          <p style="font-size:.9rem;color:rgba(255,255,255,.85);line-height:1.65;max-width:22rem">Multiply that across 400+ locations and every allocation cycle — the same stock, finally put where the revenue is.</p>
+          <a href="#next-step" style="display:inline-flex;align-items:center;gap:.375rem;margin-top:.5rem;font-size:.8rem;font-weight:700;color:#fff">See the next step →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="next-step" class="section-pad">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;max-width:72rem;margin:0 auto">
+      <div class="fade-in">
+        <p class="eyebrow eyebrow-dark">The Ask</p>
+        <h2 style="margin-bottom:1.25rem">Joint process-mapping workshop.<br>2–3 hours. Define the PoC.</h2>
+        <p class="lead" style="margin-bottom:2rem">One workshop. Three outcomes. A scoped proof-of-concept that builds on your live S/4HANA Public Cloud environment.</p>
+        <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem">
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:.875rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100)">
+            <span style="font-size:.8rem;font-weight:800;color:var(--brand-500);flex-shrink:0;min-width:1.5rem">01</span>
+            <p style="font-size:.9rem;color:var(--slate-700);line-height:1.6">Document the current allocation workflow end-to-end</p>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:.875rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100)">
+            <span style="font-size:.8rem;font-weight:800;color:var(--brand-500);flex-shrink:0;min-width:1.5rem">02</span>
+            <p style="font-size:.9rem;color:var(--slate-700);line-height:1.6">Define agent success KPIs — fill rate %, revenue uplift, cycle time</p>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:.875rem;background:var(--slate-50);border-radius:.75rem;border:1px solid var(--slate-100)">
+            <span style="font-size:.8rem;font-weight:800;color:var(--brand-500);flex-shrink:0;min-width:1.5rem">03</span>
+            <p style="font-size:.9rem;color:var(--slate-700);line-height:1.6">Scope the PoC to build directly on your live S/4HANA Public Cloud</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.875rem;padding:1rem 1.25rem;background:var(--brand-50);border:1px solid var(--brand-100);border-radius:.75rem;margin-bottom:1.25rem">
+          <div style="text-align:center;flex-shrink:0;padding:.4rem .75rem;background:var(--brand-500);border-radius:.5rem;color:#fff">
+            <div style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.8">Sep</div>
+            <div style="font-size:1.15rem;font-weight:800;line-height:1">29–30</div>
+          </div>
+          <div>
+            <p style="font-size:.9rem;font-weight:700;color:var(--slate-900)">Proposed: Tue Sep 29 or Wed Sep 30</p>
+            <p style="font-size:.8rem;color:var(--slate-500)">Ahead of Joule Studio 2.0 GA in October</p>
+          </div>
+        </div>
+        <a href="mailto:collin.weaver@sap.com" class="btn-primary" style="padding:.875rem 2rem;font-size:.95rem">Book the workshop →</a>
+      </div>
+      <div class="fade-in" style="display:flex;flex-direction:column;gap:1rem">
+        <p class="eyebrow eyebrow-dark">Stakeholders</p>
+        <div class="card-light">
+          <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.5rem">Proposed Owner</p>
+          <p style="font-size:1rem;font-weight:700;color:var(--slate-900)">Amy Kleinberg (CTO)</p>
+          <p style="font-size:.85rem;color:var(--slate-500)">+ Shilpa Niranjan (VP IT Applications)</p>
+        </div>
+        <div class="card-light">
+          <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.5rem">Executive Sponsor</p>
+          <p style="font-size:1rem;font-weight:700;color:var(--slate-900)">Carlo Bonini</p>
+          <p style="font-size:.85rem;color:var(--slate-500)">CFO &amp; COO</p>
+        </div>
+        <div class="card-light" style="border:1px solid var(--brand-100);background:var(--brand-50)">
+          <p style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-500);margin-bottom:.875rem">Prepared by</p>
+          <div style="display:flex;align-items:center;gap:.875rem;margin-bottom:.875rem">
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--brand-500);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0">CW</div>
+            <div>
+              <p style="font-size:.95rem;font-weight:700;color:var(--slate-900)">Collin Weaver</p>
+              <p style="font-size:.8rem;color:var(--slate-500)">Solution Advisor, SAP BTP West</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:.375rem;flex-wrap:wrap">
+            <span class="badge badge-brand">SAP BTP</span>
+            <span class="badge badge-outline">S/4HANA Public Cloud</span>
+            <span class="badge badge-outline">Joule Studio 2.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE NAV PILL -->
+<div id="slide-nav">
+  <button type="button" class="snav-btn" id="prev-btn" title="Previous (←)">←</button>
+  <span id="slide-counter">1 / 8</span>
+  <button type="button" class="snav-btn" id="next-btn" title="Next (→)">→</button>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:var(--slate-950);padding:2.5rem 0;border-top:1px solid rgba(255,255,255,.06)">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem">
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="SAP_2011_logo.svg.webp" height="20" alt="SAP" style="filter:brightness(2)">
+      <span style="color:rgba(255,255,255,.2);font-size:11px">×</span>
+      <img src="images.png" height="20" alt="Citizen" style="filter:invert(1)">
+    </div>
+    <div style="display:flex;gap:1.25rem">
+      <span class="badge badge-glass">Citizen · Bulova · Frederique Constant · Alpina</span>
+    </div>
+    <p style="font-size:.72rem;color:rgba(255,255,255,.25)">September 2026 · Confidential · SAP BTP West</p>
+  </div>
+</footer>
+
+<script>
+function toggleChal(btn){
+  const body = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+</script>
+<script>
+(function(){
+  // Progress bar
+  const pb = document.getElementById('progress-bar');
+  function updateProgress(){
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    pb.style.width = (scrolled/total*100)+'%';
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+
+  // Fade-in on scroll
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const siblings = Array.from((e.target.parentElement||document.body).querySelectorAll('.fade-in'));
+        const idx = siblings.indexOf(e.target);
+        e.target.style.transitionDelay = (idx * 80)+'ms';
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:.08});
+  document.querySelectorAll('.fade-in').forEach(el=>{
+    if(el.id !== 'truth-reveal') obs.observe(el);
+  });
+
+  // Hero on load
+  setTimeout(()=>{
+    document.querySelectorAll('#hero .fade-in').forEach((el,i)=>{
+      setTimeout(()=>el.classList.add('visible'), 200+i*180);
+    });
+  }, 100);
+
+  // Active nav links
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const sObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navLinks.forEach(a=>{
+          a.style.color = a.getAttribute('href')==='#'+e.target.id ? 'var(--brand-600)' : '';
+          a.style.fontWeight = a.getAttribute('href')==='#'+e.target.id ? '700' : '';
+        });
+      }
+    });
+  },{threshold:.4});
+  sections.forEach(s=>sObs.observe(s));
+})();
+</script>
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('section[id]'));
+  const counter = document.getElementById('slide-counter');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const truthEl = document.getElementById('truth-reveal');
+  const encounterIdx = slides.findIndex(s=>s.id==='encounter');
+  let current = 0;
+  let truthTimer = null;
+
+  function handleTruth(){
+    if(!truthEl) return;
+    clearTimeout(truthTimer);
+    truthEl.classList.remove('visible');
+    if(current === encounterIdx){
+      truthTimer = setTimeout(()=>{
+        truthEl.classList.add('visible');
+        truthEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+      }, 800);
+    }
+  }
+
+  function updateUI(){
+    counter.textContent = (current+1)+' / '+slides.length;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length-1;
+    handleTruth();
+  }
+
+  function slideNav(dir){
+    const next = Math.max(0, Math.min(slides.length-1, current+dir));
+    if(next === current) return;
+    current = next;
+    slides[current].scrollIntoView({behavior:'smooth', block:'start'});
+    updateUI();
+  }
+
+  prevBtn.addEventListener('click', ()=>slideNav(-1));
+  nextBtn.addEventListener('click', ()=>slideNav(1));
+
+  // Sync counter when user manually scrolls
+  const snapObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting && e.intersectionRatio >= 0.5){
+        const idx = slides.indexOf(e.target);
+        if(idx !== current){
+          current = idx;
+          updateUI();
+        }
+      }
+    });
+  },{threshold:0.5});
+  slides.forEach(s=>snapObs.observe(s));
+
+  // Keyboard navigation (arrow keys + spacebar + fullscreen)
+  document.addEventListener('keydown', e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.isContentEditable) return;
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){
+      e.preventDefault();
+      slideNav(1);
+    } else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+      e.preventDefault();
+      slideNav(-1);
+    } else if(e.key==='f'||e.key==='F'){
+      e.preventDefault();
+      const el = document.documentElement;
+      if(!document.fullscreenElement && !document.webkitFullscreenElement){
+        (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+      } else {
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      }
+    }
+  });
+
+  updateUI();
+})();
+</script>
+<script>
+(function(){
+  const sec = document.getElementById('problem-2');
+  if(!sec) return;
+  let timer = null;
+  function setSolved(on){
+    if(on){
+      sec.classList.add('solved');
+      sec.querySelectorAll('.chal-toggle--ai').forEach(btn=>{
+        btn.classList.add('open');
+        if(btn.nextElementSibling) btn.nextElementSibling.classList.add('open');
+      });
+    } else {
+      sec.classList.remove('solved');
+      sec.querySelectorAll('.chal-toggle').forEach(btn=>{
+        btn.classList.remove('open');
+        if(btn.nextElementSibling) btn.nextElementSibling.classList.remove('open');
+      });
+    }
+  }
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      clearTimeout(timer);
+      if(e.isIntersecting && e.intersectionRatio >= 0.5){
+        timer = setTimeout(()=>setSolved(true), 1700);
+      } else {
+        setSolved(false);
+      }
+    });
+  },{threshold:[0,0.5]});
+  io.observe(sec);
+})();
+</script>
+<script>
+(function(){
+  const sec = document.getElementById('solution');
+  const list = document.getElementById('s5-list');
+  if(!sec || !list) return;
+  let t = null;
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      clearTimeout(t);
+      if(e.isIntersecting && e.intersectionRatio >= 0.5){
+        t = setTimeout(()=>sec.classList.add('s5-go'), 1000);
+      } else {
+        sec.classList.remove('s5-go');
+      }
+    });
+  },{threshold:[0,0.5]});
+  io.observe(list);
+})();
+</script>
+</body>
+</html>
