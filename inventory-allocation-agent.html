@@ -676,7 +676,7 @@ function showToast(msg, type) {
 
 function injectSection(id, num, title, bodyHtml) {
   const div = document.createElement('div'); div.className = 'result-section'; div.id = id;
-  div.innerHTML = `<div class="result-section-hdr"><div class="sec-num">${num}</div>${title}</div><div class="result-section-body">${bodyHtml}</div>`;
+  div.innerHTML = `<div class="result-section-hdr">${num ? `<div class="sec-num">${num}</div>` : ''}${title}</div><div class="result-section-body">${bodyHtml}</div>`;
   document.getElementById('results').appendChild(div);
 }
 
